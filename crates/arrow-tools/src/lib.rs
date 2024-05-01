@@ -2,6 +2,8 @@
 //! This crate serves a general util library to go along
 //! with all of the crates within the arrow-tools suite.
 
+pub mod arrow_test {}
+
 pub mod seekable_reader {
     use std::fs;
     use std::io;
