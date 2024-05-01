@@ -43,58 +43,58 @@ pub enum ParquetEnabledStatistics {
 
 pub struct Opts {
     /// Input CSV fil, stdin if not present.
-    input: PathBuf,
+    pub input: PathBuf,
 
     /// Output file.
-    output: PathBuf,
+    pub output: PathBuf,
 
     /// File with Arrow schema in JSON format.
-    schema_file: Option<PathBuf>,
+    pub schema_file: Option<PathBuf>,
 
     /// The number of records to infer the schema from. All rows if not present. Setting max-read-records to zero will stop schema inference and all columns will be string typed.
-    max_read_records: Option<usize>,
+    pub max_read_records: Option<usize>,
 
     /// Set whether the CSV file has headers
-    header: Option<bool>,
+    pub header: Option<bool>,
 
     /// Set the CSV file's column delimiter as a byte character.
-    delimiter: char,
+    pub delimiter: char,
 
     /// Set the compression.
-    compression: Option<ParquetCompression>,
+    pub compression: Option<ParquetCompression>,
 
     /// Sets encoding for any column.
-    encoding: Option<ParquetEncoding>,
+    pub encoding: Option<ParquetEncoding>,
 
     /// Sets data page size limit.
-    data_page_size_limit: Option<usize>,
+    pub data_page_size_limit: Option<usize>,
 
     /// Sets dictionary page size limit.
-    dictionary_page_size_limit: Option<usize>,
+    pub dictionary_page_size_limit: Option<usize>,
 
     /// Sets write batch size.
-    write_batch_size: Option<usize>,
+    pub write_batch_size: Option<usize>,
 
     /// Sets max size for a row group.
-    max_row_group_size: Option<usize>,
+    pub max_row_group_size: Option<usize>,
 
     /// Sets "created by" property.
-    created_by: Option<String>,
+    pub created_by: Option<String>,
 
     /// Sets flag to enable/disable dictionary encoding for any column.
-    dictionary: bool,
+    pub dictionary: bool,
 
     /// Sets flag to enable/disable statistics for any column.
-    statistics: Option<ParquetEnabledStatistics>,
+    pub statistics: Option<ParquetEnabledStatistics>,
 
     /// Sets max statistics size for any column. Applicable only if statistics are enabled.
-    max_statistics_size: Option<usize>,
+    pub max_statistics_size: Option<usize>,
 
     /// Print the schema to stderr.
-    print_schema: bool,
+    pub print_schema: bool,
 
     /// Only print the schema
-    dry: bool,
+    pub dry: bool,
 }
 
 impl Opts {
