@@ -248,7 +248,6 @@ pub fn convert(opts: Opts) -> Result<(), ParquetError> {
         match batch {
             Ok(batch) => {
                 let batch = replace_empty_strings_with_nulls(batch).unwrap();
-                println!("batch={:?}", batch);
                 writer.write(&batch)?
             },
             Err(error) => return Err(error.into()),
