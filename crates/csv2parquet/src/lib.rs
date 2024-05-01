@@ -1,3 +1,5 @@
-pub fn hi() -> i32 {
-    15
+pub mod test {
+    pub fn hi() -> i32 {
+        15
+    }
 }
