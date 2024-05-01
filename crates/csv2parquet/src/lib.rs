@@ -1,4 +1,5 @@
 use arrow::csv::{reader::Format, ReaderBuilder};
+use arrow_schema::Schema;
 use arrow_tools::seekable_reader::*;
 use parquet::{
     arrow::ArrowWriter,
@@ -49,13 +50,10 @@ pub struct Opts {
     pub output: PathBuf,
 
     /// File with Arrow schema in JSON format.
-    pub schema_file: Option<PathBuf>,
+    pub schema: Option<Schema>,
 
     /// The number of records to infer the schema from. All rows if not present. Setting max-read-records to zero will stop schema inference and all columns will be string typed.
     pub max_read_records: Option<usize>,
-
-    /// Set whether the CSV file has headers
-    pub header: Option<bool>,
 
     /// Set the CSV file's column delimiter as a byte character.
     pub delimiter: char,
@@ -102,9 +100,8 @@ impl Opts {
         Self {
             input,
             output,
-            schema_file: None,
+            schema: None,
             max_read_records: None,
-            header: None,
             delimiter: ',',
             compression: None,
             encoding: None,
@@ -134,27 +131,11 @@ pub fn convert(opts: Opts) -> Result<(), ParquetError> {
         ))
     };
 
-    let schema = match opts.schema_file {
-        Some(schema_def_file_path) => {
-            let schema_file = match File::open(&schema_def_file_path) {
-                Ok(file) => Ok(file),
-                Err(error) => Err(ParquetError::General(format!(
-                    "Error opening schema file: {schema_def_file_path:?}, message: {error}"
-                ))),
-            }?;
-            let schema: Result<arrow::datatypes::Schema, serde_json::Error> =
-                serde_json::from_reader(schema_file);
-            match schema {
-                Ok(schema) => Ok(schema),
-                Err(err) => Err(ParquetError::General(format!(
-                    "Error reading schema json: {err}"
-                ))),
-            }
-        }
+    let schema = match opts.schema {
+        Some(schema) => Ok(schema),
         _ => {
             let format = Format::default()
-                .with_delimiter(opts.delimiter as u8)
-                .with_header(opts.header.unwrap_or(true));
+                .with_delimiter(opts.delimiter as u8);
 
             match format.infer_schema(&mut input, opts.max_read_records) {
                 Ok((schema, _size)) => Ok(schema),
@@ -176,7 +157,6 @@ pub fn convert(opts: Opts) -> Result<(), ParquetError> {
 
     let schema_ref = Arc::new(schema);
     let builder = ReaderBuilder::new(schema_ref)
-        .with_header(opts.header.unwrap_or(true))
         .with_delimiter(opts.delimiter as u8);
 
     let reader = builder.build(input)?;
