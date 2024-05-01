@@ -8,7 +8,7 @@ pub mod arrow_test {
     }
 }
 
-pub mod seekable_reader {
+pub mod seekable_reader2 {
     use std::fs;
     use std::io;
 

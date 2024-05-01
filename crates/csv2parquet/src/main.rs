@@ -1,5 +1,5 @@
 use arrow::csv::{reader::Format, ReaderBuilder};
-use arrow_tools::seekable_reader::*;
+use arrow_tools::seekable_reader2::*;
 use clap::{Parser, ValueHint};
 use parquet::{
     arrow::ArrowWriter,
