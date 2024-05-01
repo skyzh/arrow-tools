@@ -2,7 +2,11 @@
 //! This crate serves a general util library to go along
 //! with all of the crates within the arrow-tools suite.
 
-pub mod arrow_test {}
+pub mod arrow_test {
+    pub fn hi() -> i32 {
+        5
+    }
+}
 
 pub mod seekable_reader {
     use std::fs;
