@@ -7,7 +7,8 @@ use parquet::{
     errors::ParquetError,
     file::properties::{EnabledStatistics, WriterProperties},
 };
-use std::path::PathBuf;
+use regex::Regex;
+use std::{path::PathBuf, str::FromStr};
 use std::sync::Arc;
 use std::{fs::File, io::Seek};
 
@@ -140,7 +141,8 @@ pub fn convert(opts: Opts) -> Result<(), ParquetError> {
         _ => {
             let format = Format::default()
                 .with_delimiter(opts.delimiter as u8)
-                .with_escape(opts.escape as u8);
+                .with_escape(opts.escape as u8)
+                .with_null_regex(Regex::from_str("^$").unwrap());
 
             match format.infer_schema(&mut input, opts.max_read_records) {
                 Ok((schema, _size)) => Ok(schema),
@@ -163,7 +165,8 @@ pub fn convert(opts: Opts) -> Result<(), ParquetError> {
     let schema_ref = Arc::new(schema);
     let builder = ReaderBuilder::new(schema_ref)
         .with_delimiter(opts.delimiter as u8)
-        .with_escape(opts.escape as u8);
+        .with_escape(opts.escape as u8)
+        .with_null_regex(Regex::from_str("^$").unwrap());
 
     let reader = builder.build(input)?;
 

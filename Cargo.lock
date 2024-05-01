@@ -541,6 +541,7 @@ dependencies = [
  "arrow-tools",
  "clap",
  "parquet",
+ "regex",
  "serde_json",
 ]
 
