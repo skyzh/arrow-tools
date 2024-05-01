@@ -1,5 +1,5 @@
 use arrow::{csv::reader::Format, csv::ReaderBuilder, error::ArrowError, ipc::writer::FileWriter};
-use arrow_tools::seekable_reader2::{SeekRead, SeekableReader};
+use arrow_tools::seekable_reader::{SeekRead, SeekableReader};
 use clap::{Parser, ValueHint};
 use std::io::stdout;
 use std::path::PathBuf;

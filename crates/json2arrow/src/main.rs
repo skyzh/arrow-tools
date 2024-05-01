@@ -1,6 +1,6 @@
 use arrow::record_batch::RecordBatchReader;
 use arrow::{error::ArrowError, ipc::writer::FileWriter, json::ReaderBuilder};
-use arrow_tools::seekable_reader2::*;
+use arrow_tools::seekable_reader::*;
 use clap::{Parser, ValueHint};
 use std::fs::File;
 use std::io::{stdout, BufReader, Seek, Write};

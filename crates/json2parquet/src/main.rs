@@ -1,6 +1,6 @@
 use arrow::json::ReaderBuilder;
 use arrow::record_batch::RecordBatchReader;
-use arrow_tools::seekable_reader2::*;
+use arrow_tools::seekable_reader::*;
 use clap::{Parser, ValueHint};
 use parquet::{
     arrow::ArrowWriter,
