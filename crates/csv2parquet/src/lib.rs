@@ -163,8 +163,8 @@ pub fn convert(opts: Opts) -> Result<(), ParquetError> {
 
     let schema_ref = Arc::new(schema);
     let builder = ReaderBuilder::new(schema_ref)
-        .with_delimiter(opts.delimiter as u8)
-        .with_escape(opts.escape as u8);
+        .with_delimiter(opts.delimiter as u8);
+        //.with_escape(opts.escape as u8);
 
     let reader = builder.build(input)?;
 
