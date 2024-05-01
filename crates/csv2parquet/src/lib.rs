@@ -122,7 +122,7 @@ impl Opts {
     }
 }
 
-pub fn csv2parquet(opts: Opts) -> Result<(), ParquetError> {
+pub fn convert(opts: Opts) -> Result<(), ParquetError> {
     let mut file = File::open(&opts.input)?;
 
     let mut input: Box<dyn SeekRead> = if file.rewind().is_ok() {
