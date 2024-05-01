@@ -1,5 +1,5 @@
-use arrow::csv::{reader::Format, ReaderBuilder};
-use arrow_schema::Schema;
+use arrow::{array::{Array, ArrayRef, GenericByteBuilder, LargeStringArray, RecordBatch, StringArray}, csv::{reader::Format, ReaderBuilder}, datatypes::GenericStringType};
+use arrow_schema::{DataType, Schema};
 use arrow_tools::seekable_reader::*;
 use parquet::{
     arrow::ArrowWriter,
@@ -245,9 +245,12 @@ pub fn convert(opts: Opts) -> Result<(), ParquetError> {
     let mut writer = ArrowWriter::try_new(output, reader.schema(), Some(props.build()))?;
 
     for batch in reader {
-        println!("batch={:?}", batch);
         match batch {
-            Ok(batch) => writer.write(&batch)?,
+            Ok(batch) => {
+                let batch = replace_empty_strings_with_nulls(batch).unwrap();
+                println!("batch={:?}", batch);
+                writer.write(&batch)?
+            },
             Err(error) => return Err(error.into()),
         }
     }
@@ -256,4 +259,41 @@ pub fn convert(opts: Opts) -> Result<(), ParquetError> {
         Ok(_) => Ok(()),
         Err(error) => Err(error),
     }
+}
+
+fn replace_empty_strings_with_nulls(batch: RecordBatch) -> arrow::error::Result<RecordBatch> {
+    let mut new_columns: Vec<ArrayRef> = Vec::new();
+
+    // Iterate over each column in the batch
+    for i in 0..batch.num_columns() {
+        let column = batch.column(i);
+        let schema = batch.schema();
+        let field = schema.field(i);
+
+        // Check if the column is a nullable string type
+        if matches!(field.data_type(), &DataType::Utf8) && field.is_nullable() {
+            // Create a new column with empty strings replaced by nulls
+            let string_array = column.as_any().downcast_ref::<StringArray>().unwrap();
+            // let mut builder = LargeStringArray::into_builder(string_array.len()).unwrap();
+            let mut builder: GenericByteBuilder<GenericStringType<i32>> = GenericByteBuilder::new();
+
+            for j in 0..string_array.len() {
+                if string_array.is_null(j) || string_array.value(j).is_empty() {
+                    builder.append_null();
+                } else {
+                    builder.append_value(string_array.value(j));
+                }
+            }
+
+            new_columns.push(Arc::new(builder.finish()) as ArrayRef);
+        } else {
+            // For non-string or non-nullable fields, use the original column
+            new_columns.push(column.clone());
+        }
+    }
+
+    // Create a new RecordBatch with updated columns
+    let new_batch = RecordBatch::try_new(batch.schema(), new_columns)?;
+
+    Ok(new_batch)
 }
