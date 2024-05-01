@@ -121,6 +121,10 @@ struct Opts {
     dry: bool,
 }
 
+pub fn hi() -> i32 {
+    15
+}
+
 fn main() -> Result<(), ParquetError> {
     let opts: Opts = Opts::parse();
 
