@@ -141,8 +141,7 @@ pub fn convert(opts: Opts) -> Result<(), ParquetError> {
         _ => {
             let format = Format::default()
                 .with_delimiter(opts.delimiter as u8)
-                .with_escape(opts.escape as u8)
-                .with_null_regex(Regex::from_str("^$").unwrap());
+                .with_escape(opts.escape as u8);
 
             match format.infer_schema(&mut input, opts.max_read_records) {
                 Ok((schema, _size)) => Ok(schema),
@@ -165,8 +164,7 @@ pub fn convert(opts: Opts) -> Result<(), ParquetError> {
     let schema_ref = Arc::new(schema);
     let builder = ReaderBuilder::new(schema_ref)
         .with_delimiter(opts.delimiter as u8)
-        .with_escape(opts.escape as u8)
-        .with_null_regex(Regex::from_str("^$").unwrap());
+        .with_escape(opts.escape as u8);
 
     let reader = builder.build(input)?;
 
@@ -245,6 +243,7 @@ pub fn convert(opts: Opts) -> Result<(), ParquetError> {
     let mut writer = ArrowWriter::try_new(output, reader.schema(), Some(props.build()))?;
 
     for batch in reader {
+        println!("batch={:?}", batch);
         match batch {
             Ok(batch) => writer.write(&batch)?,
             Err(error) => return Err(error.into()),
