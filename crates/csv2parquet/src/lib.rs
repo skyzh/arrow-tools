@@ -58,6 +58,9 @@ pub struct Opts {
     /// Set the CSV file's column delimiter as a byte character.
     pub delimiter: char,
 
+    /// Set the CSV file's column escape as a byte character.
+    pub escape: char,
+
     /// Set the compression.
     pub compression: Option<ParquetCompression>,
 
@@ -103,6 +106,7 @@ impl Opts {
             schema: None,
             max_read_records: None,
             delimiter: ',',
+            escape: '\\',
             compression: None,
             encoding: None,
             data_page_size_limit: None,
@@ -135,7 +139,8 @@ pub fn convert(opts: Opts) -> Result<(), ParquetError> {
         Some(schema) => Ok(schema),
         _ => {
             let format = Format::default()
-                .with_delimiter(opts.delimiter as u8);
+                .with_delimiter(opts.delimiter as u8)
+                .with_escape(opts.escape as u8);
 
             match format.infer_schema(&mut input, opts.max_read_records) {
                 Ok((schema, _size)) => Ok(schema),
@@ -157,7 +162,8 @@ pub fn convert(opts: Opts) -> Result<(), ParquetError> {
 
     let schema_ref = Arc::new(schema);
     let builder = ReaderBuilder::new(schema_ref)
-        .with_delimiter(opts.delimiter as u8);
+        .with_delimiter(opts.delimiter as u8)
+        .with_escape(opts.escape as u8);
 
     let reader = builder.build(input)?;
 
