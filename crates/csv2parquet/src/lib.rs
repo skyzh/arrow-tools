@@ -141,7 +141,8 @@ pub fn convert(opts: Opts) -> Result<(), ParquetError> {
         _ => {
             let format = Format::default()
                 .with_delimiter(opts.delimiter as u8)
-                .with_escape(opts.escape as u8);
+                .with_escape(opts.escape as u8)
+                .with_quote(b'"');
 
             match format.infer_schema(&mut input, opts.max_read_records) {
                 Ok((schema, _size)) => Ok(schema),
@@ -163,8 +164,9 @@ pub fn convert(opts: Opts) -> Result<(), ParquetError> {
 
     let schema_ref = Arc::new(schema);
     let builder = ReaderBuilder::new(schema_ref)
-        .with_delimiter(opts.delimiter as u8);
-        //.with_escape(opts.escape as u8);
+        .with_delimiter(opts.delimiter as u8)
+        .with_escape(opts.escape as u8)
+        .with_quote(b'"');
 
     let reader = builder.build(input)?;
 
